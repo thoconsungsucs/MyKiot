@@ -522,17 +522,7 @@ export default function Page() {
           </ScrollArea>
           {selectedInvoice && (
             <DialogFooter className="p-4 sm:p-6 border-t flex justify-start gap-2">
-              {getInvoiceActions(selectedInvoice).map((action, index) => (
-                <Button
-                  key={index}
-                  variant={action.variant}
-                  className="flex-1 w-full sm:w-auto"
-                  onClick={() => action.action(selectedInvoice)}
-                >
-                  <action.icon className="h-4 w-4 mr-2"/>
-                  {action.label}
-                </Button>
-              ))}
+              
             </DialogFooter>
           )}
         </DialogContent>

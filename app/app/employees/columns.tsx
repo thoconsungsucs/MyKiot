@@ -1,10 +1,9 @@
-"use client"
+"use client";
 
-import React from "react"
-import {ColumnDef} from "@tanstack/react-table"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Button } from "@/components/ui/button"
-import { MoreHorizontal, Pencil, Trash } from "lucide-react"
+import React from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,17 +11,40 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Employee, statusMap } from "@/lib/types/employee"
+} from "@/components/ui/dropdown-menu";
+import { Employee, statusMap, positions } from "@/lib/types/employee";
+import { ColumnDefWithWidth } from "@/components/table/editable-data-table";
+
+/**
+ * Column definitions for the employees table with fixed widths.
+ * Each column can have an optional 'width' property to set a fixed width.
+ * Example: width: "150px" will set the column to exactly 150px wide.
+ */
 
 interface ColumnProps {
-  onEdit: (employee: Employee) => void
-  onDelete: (employee: Employee) => void
+  onEdit: (employee: Employee) => void;
+  onDelete: (employee: Employee) => void;
 }
 
-export const createColumns = ({ onEdit, onDelete }: ColumnProps): ColumnDef<Employee>[] => [
+// Export position options for the editable table
+export const positionOptions = positions.map((pos) => ({
+  value: pos,
+  label: pos,
+}));
+
+// Export status options for the editable table
+export const statusOptions = [
+  { value: "active", label: "Đang làm việc" },
+  { value: "inactive", label: "Nghỉ việc" },
+];
+
+export const createColumns = ({
+  onEdit,
+  onDelete,
+}: ColumnProps): ColumnDefWithWidth<Employee>[] => [
   {
     id: "select",
+    width: "40px",
     header: ({ table }) => (
       <Checkbox
         checked={
@@ -47,38 +69,46 @@ export const createColumns = ({ onEdit, onDelete }: ColumnProps): ColumnDef<Empl
   },
   {
     accessorKey: "id",
-    header: "ID"
+    header: "ID",
+    width: "60px",
   },
   {
     accessorKey: "name",
     header: "Họ và tên",
+    width: "150px",
   },
   {
     accessorKey: "email",
     header: "Email",
+    width: "180px",
   },
   {
     accessorKey: "phone",
     header: "Số điện thoại",
+    width: "120px",
   },
   {
     accessorKey: "position",
     header: "Chức vụ",
+    width: "100px",
   },
   {
     accessorKey: "status",
     header: "Trạng thái",
-    cell: ({ row }) => statusMap[row.original.status]
+    width: "120px",
+    cell: ({ row }) => statusMap[row.original.status],
   },
   {
     accessorKey: "joinDate",
     header: "Ngày vào làm",
+    width: "110px",
   },
   {
     id: "actions",
+    width: "70px",
     enableHiding: false,
     cell: ({ row }) => {
-      const employee = row.original
+      const employee = row.original;
 
       return (
         <DropdownMenu>
@@ -96,7 +126,7 @@ export const createColumns = ({ onEdit, onDelete }: ColumnProps): ColumnDef<Empl
               Chỉnh sửa
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={() => onDelete(employee)}
               className="text-red-600"
             >
@@ -105,7 +135,7 @@ export const createColumns = ({ onEdit, onDelete }: ColumnProps): ColumnDef<Empl
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-] 
+];
