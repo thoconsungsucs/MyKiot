@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import React from "react"
-import {ColumnDef} from "@tanstack/react-table"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Button } from "@/components/ui/button"
-import { MoreHorizontal, Pencil, Trash } from "lucide-react"
+import React from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,15 +12,30 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Employee, statusMap } from "@/lib/types/employee"
+} from "@/components/ui/dropdown-menu";
+import { Employee, statusMap, positions } from "@/lib/types/employee";
 
 interface ColumnProps {
-  onEdit: (employee: Employee) => void
-  onDelete: (employee: Employee) => void
+  onEdit: (employee: Employee) => void;
+  onDelete: (employee: Employee) => void;
 }
 
-export const createColumns = ({ onEdit, onDelete }: ColumnProps): ColumnDef<Employee>[] => [
+// Export position options for the editable table
+export const positionOptions = positions.map((pos) => ({
+  value: pos,
+  label: pos,
+}));
+
+// Export status options for the editable table
+export const statusOptions = [
+  { value: "active", label: "Đang làm việc" },
+  { value: "inactive", label: "Nghỉ việc" },
+];
+
+export const createColumns = ({
+  onEdit,
+  onDelete,
+}: ColumnProps): ColumnDef<Employee>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -47,7 +62,7 @@ export const createColumns = ({ onEdit, onDelete }: ColumnProps): ColumnDef<Empl
   },
   {
     accessorKey: "id",
-    header: "ID"
+    header: "ID",
   },
   {
     accessorKey: "name",
@@ -68,7 +83,7 @@ export const createColumns = ({ onEdit, onDelete }: ColumnProps): ColumnDef<Empl
   {
     accessorKey: "status",
     header: "Trạng thái",
-    cell: ({ row }) => statusMap[row.original.status]
+    cell: ({ row }) => statusMap[row.original.status],
   },
   {
     accessorKey: "joinDate",
@@ -78,7 +93,7 @@ export const createColumns = ({ onEdit, onDelete }: ColumnProps): ColumnDef<Empl
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const employee = row.original
+      const employee = row.original;
 
       return (
         <DropdownMenu>
@@ -96,7 +111,7 @@ export const createColumns = ({ onEdit, onDelete }: ColumnProps): ColumnDef<Empl
               Chỉnh sửa
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={() => onDelete(employee)}
               className="text-red-600"
             >
@@ -105,7 +120,7 @@ export const createColumns = ({ onEdit, onDelete }: ColumnProps): ColumnDef<Empl
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-] 
+];

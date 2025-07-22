@@ -1,27 +1,20 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { DataTable } from "@/components/table/data-table"
-import { createColumns } from "./columns"
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { useState } from "react";
+import { EditableDataTable } from "@/components/table/editable-data-table";
+import { createColumns, positionOptions, statusOptions } from "./columns";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { EmployeeForm } from "./employee-form"
-import { Employee } from "@/lib/types/employee"
+} from "@/components/ui/dialog";
+import { EmployeeForm } from "./employee-form";
+import { Employee } from "@/lib/types/employee";
 
 // Mock data - replace with actual API call
 const mockEmployees: Employee[] = [
@@ -32,53 +25,92 @@ const mockEmployees: Employee[] = [
     phone: "0123456789",
     position: "Quản lý",
     status: "active",
-    joinDate: "2024-01-01"
+    joinDate: "2024-01-01",
   },
   {
     id: "2",
     name: "Trần Thị B",
     email: "tranthib@example.com",
     phone: "0987654321",
-    position: "Nhân viên bán hàng",
+    position: "Sale",
     status: "active",
-    joinDate: "2024-02-01"
+    joinDate: "2024-02-01",
   },
   // Add more mock data as needed
-]
+];
 
 export default function EmployeesPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | undefined>()
-
-  const filteredEmployees = mockEmployees.filter(employee => {
-    const matchesSearch = employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         employee.email.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesSearch 
-  })
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedEmployee, setSelectedEmployee] = useState<
+    Employee | undefined
+  >();
+  const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
+  const filteredEmployees = employees.filter((employee) => {
+    const matchesSearch =
+      employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      employee.email.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
+  });
 
   const handleAddEmployee = (data: Omit<Employee, "id">) => {
     // Here you would typically make an API call to add the employee
-    console.log("Adding new employee:", data)
-  }
+    const newEmployee = { ...data, id: Date.now().toString() };
+    setEmployees([...employees, newEmployee]);
+    console.log("Adding new employee:", data);
+  };
 
   const handleEditEmployee = (data: Omit<Employee, "id">) => {
     // Here you would typically make an API call to update the employee
-    console.log("Updating employee:", data)
-    setSelectedEmployee(undefined)
-  }
+    if (selectedEmployee) {
+      setEmployees(
+        employees.map((emp) =>
+          emp.id === selectedEmployee.id
+            ? { ...data, id: selectedEmployee.id }
+            : emp
+        )
+      );
+    }
+    console.log("Updating employee:", data);
+    setSelectedEmployee(undefined);
+  };
 
   const handleDeleteEmployee = (employee: Employee) => {
     // Here you would typically make an API call to delete the employee
-    console.log("Deleting employee:", employee)
-  }
+    setEmployees(employees.filter((emp) => emp.id !== employee.id));
+    console.log("Deleting employee:", employee);
+  };
+  const handleInlineUpdate = (
+    rowIndex: number,
+    columnId: string,
+    value: string
+  ) => {
+    const employeeToUpdate = filteredEmployees[rowIndex];
+    const updatedEmployee = { ...employeeToUpdate, [columnId]: value };
+
+    setEmployees(
+      employees.map((emp) =>
+        emp.id === employeeToUpdate.id ? updatedEmployee : emp
+      )
+    );
+
+    console.log("Inline update:", { rowIndex, columnId, value });
+  };
 
   const columns = createColumns({
     onEdit: (employee) => setSelectedEmployee(employee),
-    onDelete: handleDeleteEmployee
-  })
+    onDelete: handleDeleteEmployee,
+  });
+
+  // Define which columns are editable and their options
+  const editableColumns = ["name", "email", "phone", "position", "status"];
+  const dropdownOptions = {
+    position: positionOptions,
+    status: statusOptions,
+  };
 
   return (
     <div className="">
+      {" "}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
         <h1 className="text-2xl font-bold">Quản lý nhân viên</h1>
         <div className="flex flex-row gap-2 w-full sm:w-auto">
@@ -98,7 +130,6 @@ export default function EmployeesPage() {
           </Dialog>
         </div>
       </div>
-
       <div className="flex gap-4 mb-6">
         <div className="flex-1">
           <Input
@@ -107,26 +138,30 @@ export default function EmployeesPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-      </div>
-
-      <DataTable 
-        columns={columns} 
+      </div>{" "}
+      <EditableDataTable
+        columns={columns}
         data={filteredEmployees}
+        onUpdate={handleInlineUpdate}
+        editableColumns={editableColumns}
+        dropdownOptions={dropdownOptions}
       />
-
-      <Dialog open={!!selectedEmployee} onOpenChange={() => setSelectedEmployee(undefined)}>
+      <Dialog
+        open={!!selectedEmployee}
+        onOpenChange={() => setSelectedEmployee(undefined)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Chỉnh sửa nhân viên</DialogTitle>
           </DialogHeader>
           {selectedEmployee && (
-            <EmployeeForm 
-              employee={selectedEmployee} 
-              onSubmit={handleEditEmployee} 
+            <EmployeeForm
+              employee={selectedEmployee}
+              onSubmit={handleEditEmployee}
             />
           )}
         </DialogContent>
       </Dialog>
     </div>
-  )
-} 
+  );
+}
