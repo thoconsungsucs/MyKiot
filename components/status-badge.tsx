@@ -5,7 +5,7 @@ import { LucideIcon } from "lucide-react"
 export interface StatusConfig {
   label: string
   icon: LucideIcon
-  variant: "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "info"
+  variant: "default" | "secondary" | "destructive" | "outline" | null | undefined
 }
 
 interface StatusBadgeProps<T extends string> {

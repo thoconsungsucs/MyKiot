@@ -1,6 +1,6 @@
 "use client"
 
-import {ChevronRight, type LucideIcon} from "lucide-react"
+import { ChevronRight, type LucideIcon } from "lucide-react"
 
 import {
   Collapsible,
@@ -16,13 +16,12 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
+} from "@/components/nav/sidebar"
 
 export function NavMain({
-                          collapsibleItems,
-                          normalItems,
-                        }: {
-  collapsibleItems: {
+  items,
+}: {
+  items: {
     title: string
     url: string
     icon?: LucideIcon
@@ -31,18 +30,13 @@ export function NavMain({
       title: string
       url: string
     }[]
-  }[],
-  normalItems: {
-    title: string
-    url: string
-    icon: LucideIcon
   }[]
 }) {
   return (
     <SidebarGroup>
-      {/*<SidebarGroupLabel>Platform</SidebarGroupLabel>*/}
+      <SidebarGroupLabel>Nhân viên</SidebarGroupLabel>
       <SidebarMenu>
-        {collapsibleItems.map((item) => (
+        {items.map((item) => (
           <Collapsible
             key={item.title}
             asChild
@@ -52,9 +46,9 @@ export function NavMain({
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon/>}
+                  {item.icon && <item.icon />}
                   <span>{item.title}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"/>
+                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -72,16 +66,6 @@ export function NavMain({
               </CollapsibleContent>
             </SidebarMenuItem>
           </Collapsible>
-        ))}
-        {normalItems.map((item) => (
-          <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild>
-              <a href={item.url}>
-                <item.icon/>
-                <span>{item.title}</span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
         ))}
       </SidebarMenu>
     </SidebarGroup>

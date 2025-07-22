@@ -19,17 +19,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {InvoiceForm} from "@/app/pages/invoices/invoice-form"
-import {createColumns} from "@/app/pages/invoices/columns"
+import {InvoiceForm} from "@/app/app/invoices/_components/invoice-form"
+import {createColumns} from "@/app/app/invoices/_components/columns"
 import {Invoice} from "@/lib/types/invoice"
 import {Product} from "@/lib/types/product"
 import {formatCurrency} from "@/lib/utils"
 import {Label} from "@/components/ui/label"
 import {SectionCards} from "@/components/section-cards"
 import {Separator} from "@/components/ui/separator"
-import {Plus, CheckCircle, XCircle, Truck, Package, RotateCcw} from "lucide-react"
-import {StatusBadge} from "@/components/status-badge"
-import {statusMap, getInvoiceActions} from "@/lib/types/invoice"
+import {Plus} from "lucide-react"
 import {ScrollArea} from "@/components/ui/scroll-area"
 
 // Mock data
@@ -333,7 +331,6 @@ export default function Page() {
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
-  const [selectedInvoiceForProducts, setSelectedInvoiceForProducts] = useState<Invoice | null>(null)
 
   const handleCreateInvoice = (data: Omit<Invoice, "id" | "status" | "createdAt" | "updatedAt">) => {
     console.log("Create invoice:", data)
@@ -344,14 +341,6 @@ export default function Page() {
     setSelectedInvoice(invoice)
   }
 
-  const handlePrintInvoice = (invoice: Invoice) => {
-    console.log("Print invoice:", invoice)
-    // TODO: Implement print functionality
-  }
-
-  const handleShowProducts = (invoice: Invoice) => {
-    setSelectedInvoiceForProducts(invoice)
-  }
 
   const filteredInvoices = mockInvoices.filter((invoice) => {
     const matchesSearch =
@@ -465,10 +454,6 @@ export default function Page() {
                     <div className="space-y-2">
                       <Label>Mã đơn hàng</Label>
                       <Input value={selectedInvoice.id} readOnly/>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Trạng thái</Label>
-                      <StatusBadge status={selectedInvoice.status} config={statusMap}/>
                     </div>
                   </div>
 

@@ -1,6 +1,6 @@
-import {AppSidebar} from "@/components/app-sidebar";
+import {AppSidebar} from "@/components/nav/app-sidebar";
 
-import {SidebarInset, SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
+import {SidebarInset, SidebarProvider, SidebarTrigger} from "@/components/nav/sidebar";
 import {Separator} from "@/components/ui/separator";
 import React from "react";
 

@@ -9,10 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Eye, Printer } from "lucide-react"
-import { formatCurrency, formatNumber } from "@/lib/utils"
-import { StatusBadge } from "@/components/status-badge"
-import { statusMap, StatusType } from "@/lib/types/invoice"
+import { MoreHorizontal, Eye } from "lucide-react"
+import { formatCurrency } from "@/lib/utils"
 
 interface ColumnProps {
   onView: (invoice: Invoice) => void
@@ -35,14 +33,6 @@ export const createColumns = ({ onView }: ColumnProps): ColumnDef<Invoice>[] => 
     accessorKey: "totalAmount",
     header: "Tổng tiền",
     cell: ({ row }) => formatCurrency(row.getValue("totalAmount")),
-  },
-  {
-    accessorKey: "status",
-    header: "Trạng thái",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as StatusType
-      return <StatusBadge status={status} config={statusMap} />
-    },
   },
   {
     accessorKey: "createdAt",
