@@ -33,6 +33,7 @@ interface ComboboxProps {
   emptyText?: string;
   className?: string;
   disabled?: boolean;
+  showValue?: boolean; // Optional prop to show value
 }
 
 export function Combobox({
@@ -44,6 +45,7 @@ export function Combobox({
   emptyText = "Không tìm thấy tùy chọn.",
   className,
   disabled = false,
+  showValue = false, // Optional prop to show value
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -84,7 +86,9 @@ export function Combobox({
                       value === option.value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {option.label}
+                  {showValue
+                    ? `${option.value} - ${option.label}`
+                    : option.label}
                 </CommandItem>
               ))}
             </CommandList>

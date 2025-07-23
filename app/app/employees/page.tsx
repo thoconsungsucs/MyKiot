@@ -68,7 +68,7 @@ export default function EmployeesPage() {
       phone: "",
       position: "Sale", // Default position
       status: "active", // Default status
-      joinDate: new Date().toISOString().split('T')[0], // Today's date
+      joinDate: new Date().toISOString().split("T")[0], // Today's date
     };
     setEmployees([...employees, newEmployee]);
     console.log("Adding new row for inline editing:", newEmployee);

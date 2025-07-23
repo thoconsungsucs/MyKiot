@@ -114,10 +114,12 @@ export function EditableDataTable<TData, TValue>({
     setEditingCell(null);
     setEditValue("");
   };
-
   const handleAddRow = () => {
-    if (onAddRow) {
-      setEditingCell({ rowIndex: data.length, columnId: editableColumns[0] });
+    if (onAddRow && editableColumns.length > 0) {
+      setEditingCell({
+        rowIndex: data.length,
+        columnId: editableColumns[0],
+      });
       onAddRow();
     }
   };
@@ -134,7 +136,6 @@ export function EditableDataTable<TData, TValue>({
         return (
           <div className="absolute bottom-2 left-[3.4px] right-2">
             <Combobox
-              showValue
               options={dropdownOptions[columnId]}
               value={editValue}
               onValueChange={(value) => {
@@ -149,10 +150,10 @@ export function EditableDataTable<TData, TValue>({
           </div>
         );
       } else {
+        // Regular input field      } else {
         // Regular input field
         return (
           <div className="absolute bottom-2.5 left-[3.4px] right-2">
-            {" "}
             <Input
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
@@ -161,12 +162,12 @@ export function EditableDataTable<TData, TValue>({
                 if (e.key === "Enter") saveEdit();
                 if (e.key === "Escape") cancelEdit();
               }}
-              onBlur={() => saveEdit()}
+              onBlur={saveEdit}
               autoFocus
-              onFocus={(e) => e.target.select()}
             />
           </div>
         );
+      }
       }
     } // Display mode
     return (
