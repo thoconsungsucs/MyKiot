@@ -27,16 +27,13 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Combobox, ComboboxOption } from "@/components/ui/combobox";
 
 // Extended ColumnDef type with width property - exported for use in other components
-export type ColumnDefWithWidth<TData, TValue = unknown> = ColumnDef<TData, TValue> & {
+export type ColumnDefWithWidth<TData, TValue = unknown> = ColumnDef<
+  TData,
+  TValue
+> & {
   width?: string; // Optional CSS width value (e.g., "150px", "20%", "auto")
 };
 
@@ -47,8 +44,8 @@ interface EditableDataTableProps<TData, TValue> {
   onAddRow?: () => void;
   addRowButtonText?: string;
   editableColumns?: string[];
-  dropdownOptions?: Record<string, { value: string; label: string }[]>;
-  /** 
+  dropdownOptions?: Record<string, ComboboxOption[]>;
+  /**
    * @deprecated Use width property in column definitions instead
    * Optional fixed widths for columns. Key should match column id, value should be CSS width string.
    * Example: { id: "80px", name: "200px", email: "220px" }
@@ -124,14 +121,13 @@ export function EditableDataTable<TData, TValue>({
       editingCell?.rowIndex === rowIndex && editingCell?.columnId === columnId;
     const isEditable = editableColumns.includes(columnId);
     const cellValue = cell.getValue();
-
     if (isEditing) {
       // Check if this column has dropdown options
       if (dropdownOptions[columnId]) {
         return (
-          <div className="flex items-center gap-2 h-8">
-            {" "}
-            <Select
+          <div className="absolute bottom-2 left-[3.4px] right-2">
+            <Combobox
+              options={dropdownOptions[columnId]}
               value={editValue}
               onValueChange={(value) => {
                 console.log("Selected value:", value);
@@ -142,24 +138,13 @@ export function EditableDataTable<TData, TValue>({
                 }
                 cancelEdit();
               }}
-            >
-              <SelectTrigger className="h-8">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {dropdownOptions[columnId].map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            />
           </div>
         );
       } else {
         // Regular input field
         return (
-          <div className="">
+          <div className="absolute bottom-2.5 left-[3.4px] right-2">
             {" "}
             <Input
               value={editValue}
@@ -191,120 +176,145 @@ export function EditableDataTable<TData, TValue>({
     );
   };
 
-  const hasFixedWidths = columns.some(col => (col as ColumnDefWithWidth<TData, TValue>).width) || Object.keys(columnWidths).length > 0;
+  const hasFixedWidths =
+    columns.some((col) => (col as ColumnDefWithWidth<TData, TValue>).width) ||
+    Object.keys(columnWidths).length > 0;
 
   return (
     <div className="space-y-4">
       {/* Add Row Button - Only show if onAddRow is provided */}
       {onAddRow && (
         <div className="flex justify-end">
-          <Button onClick={onAddRow} size="sm" variant="outline" className="text-sm">
+          <Button
+            onClick={onAddRow}
+            size="sm"
+            variant="outline"
+            className="text-sm"
+          >
             <Plus className="h-4 w-4 mr-2" />
             {addRowButtonText}
           </Button>
         </div>
       )}
-      
+
       <div className="rounded-md border">
         {/* Desktop View */}
         <div className="hidden md:block overflow-x-auto">
-        <Table style={hasFixedWidths ? { tableLayout: 'fixed', width: '100%' } : undefined}>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  const columnDef = header.column.columnDef as ColumnDefWithWidth<TData, TValue>;
-                  const width = columnDef.width || columnWidths[header.column.id];
-                  return (
-                    <TableHead 
-                      key={header.id} 
-                      className="whitespace-nowrap px-3 py-2"
-                      style={width ? { width, minWidth: width, maxWidth: width } : undefined}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row, rowIndex) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    const columnDef = cell.column.columnDef as ColumnDefWithWidth<TData, TValue>;
-                    const width = columnDef.width || columnWidths[cell.column.id];
+          <Table
+            style={
+              hasFixedWidths
+                ? { tableLayout: "fixed", width: "100%" }
+                : undefined
+            }
+          >
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    const columnDef = header.column
+                      .columnDef as ColumnDefWithWidth<TData, TValue>;
+                    const width =
+                      columnDef.width || columnWidths[header.column.id];
                     return (
-                      <TableCell
-                        key={cell.id}
-                        className="px-3 py-2 text-ellipsis overflow-hidden"
-                        style={width ? { width, minWidth: width, maxWidth: width } : undefined}
+                      <TableHead
+                        key={header.id}
+                        className="whitespace-nowrap px-3 py-2"
+                        style={
+                          width
+                            ? { width, minWidth: width, maxWidth: width }
+                            : undefined
+                        }
                       >
-                        {renderEditableCell(cell, rowIndex)}
-                      </TableCell>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
                     );
                   })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row, rowIndex) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      const columnDef = cell.column
+                        .columnDef as ColumnDefWithWidth<TData, TValue>;
+                      const width =
+                        columnDef.width || columnWidths[cell.column.id];
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          className="px-3 py-2 text-ellipsis overflow-hidden relative"
+                          style={
+                            width
+                              ? { width, minWidth: width, maxWidth: width }
+                              : undefined
+                          }
+                        >
+                          {renderEditableCell(cell, rowIndex)}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-      {/* Mobile View */}
-      <div className="md:hidden space-y-4 p-4">
-        {table.getRowModel().rows?.length ? (
-          table.getRowModel().rows.map((row, rowIndex) => (
-            <Card key={row.id}>
-              <CardContent className="space-y-2 pt-4">
-                {row.getVisibleCells().map((cell) => {
-                  const header = table
-                    .getHeaderGroups()[0]
-                    .headers.find((h) => h.column.id === cell.column.id);
-                  return (
-                    <div
-                      key={cell.id}
-                      className="flex justify-between items-start"
-                    >
-                      <span className="font-medium min-w-0 flex-shrink-0 mr-4">
-                        {header
-                          ? flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )
-                          : cell.column.id}
-                      </span>
-                      <div className="flex-1 min-w-0 text-right">
-                        {renderEditableCell(cell, rowIndex)}
+        {/* Mobile View */}
+        <div className="md:hidden space-y-4 p-4">
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row, rowIndex) => (
+              <Card key={row.id}>
+                <CardContent className="space-y-2 pt-4">
+                  {row.getVisibleCells().map((cell) => {
+                    const header = table
+                      .getHeaderGroups()[0]
+                      .headers.find((h) => h.column.id === cell.column.id);
+                    return (
+                      <div
+                        key={cell.id}
+                        className="flex justify-between items-start"
+                      >
+                        <span className="font-medium min-w-0 flex-shrink-0 mr-4">
+                          {header
+                            ? flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )
+                            : cell.column.id}
+                        </span>
+                        <div className="flex-1 min-w-0 text-right">
+                          {renderEditableCell(cell, rowIndex)}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <div className="text-center p-4">No results.</div>
-        )}
-      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <div className="text-center p-4">No results.</div>
+          )}
+        </div>
       </div>
     </div>
   );
