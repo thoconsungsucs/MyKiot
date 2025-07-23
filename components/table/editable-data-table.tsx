@@ -186,6 +186,7 @@ export function EditableDataTable<TData, TValue>({
       {onAddRow && (
         <div className="flex justify-end">
           <Button
+            type="button"
             onClick={onAddRow}
             size="sm"
             variant="outline"

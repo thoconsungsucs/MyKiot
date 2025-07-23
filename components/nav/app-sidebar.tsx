@@ -47,7 +47,7 @@ const data = {
   products: [
     {
       name: "Mua hàng",
-      url: "#",
+      url: "/app/imports",
       icon: Frame,
     },
     {
